@@ -21,7 +21,7 @@ export default class PharmaCompanyEdit extends Component {
 		if (success) {
 			return <Redirect to={'/pharma_companies'} />
 		}
-
+		
 		return (
 			<PharmaCompanyForm
 				create={false}

@@ -4,15 +4,17 @@ import { Container, Card,  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
+import Loading from '../Loading.js';
 
 export default class Doctors extends Component {
   state = {
     doctors: [],
+    loading: true,
   }
 
   componentDidMount() {
     ApiRequest('doctor', 'get', null, null, null).then(response => {
-      this.setState({ doctors: response.data.data })
+      this.setState({ doctors: response.data.data, loading: false })
       console.log(response, "doctors");
     }).catch(err => {
       console.log(`Unable to fetch doctors due to: ${err}`);
@@ -39,7 +41,7 @@ export default class Doctors extends Component {
 	}
 
   render() {
-    const { doctors } = this.state;
+    const { doctors, loading } = this.state;
 
     const columns = [
     {
@@ -62,6 +64,10 @@ export default class Doctors extends Component {
     }
   ]
 
+    if(loading) {
+      return <Loading />
+    }
+    
     return (
       <Container>
         <Card>

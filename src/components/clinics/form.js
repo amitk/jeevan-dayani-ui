@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { Link } from 'react-router-dom';
 import { Container, Card, Form, FormGroup  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
+import Loading from '../Loading.js';
 
 
 export default class ClinicForm extends Component {
@@ -13,12 +14,15 @@ export default class ClinicForm extends Component {
     country: "",
     doctors: "",
     doctorOptions: [],
+    loading: true,
   }
 
   componentDidMount() {
     this.doctorOptions();
 
-    if(!this.props.create) {
+    if(this.props.create) {
+      this.setState({ loading: false });
+    } else {
       ApiRequest('clinic', 'get', this.props.clinicId, null, null).then(response => {
         let clinic = response.data.data.clinic;
         let doctors = response.data.data.doctors;
@@ -28,7 +32,8 @@ export default class ClinicForm extends Component {
           city: { label: clinic.city, value: clinic.city },
           state: { label: clinic.state, value: clinic.state },
           country: { label: clinic.country, value: clinic.country },
-          doctors: doctors.map(d => ({ label: d.name, value: d.id }))      
+          doctors: doctors.map(d => ({ label: d.name, value: d.id })),      
+          loading: false,
         })
       })
     }
@@ -96,8 +101,11 @@ export default class ClinicForm extends Component {
   }
 
   render() {
-    const { name, city, state, country, doctors, doctorOptions } = this.state;
+    const { name, city, state, country, doctors, doctorOptions, loading } = this.state;
 
+    if(loading) {
+      return <Loading />
+    }
     return (
       <Container>
         <Card>

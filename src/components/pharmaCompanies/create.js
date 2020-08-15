@@ -17,7 +17,7 @@ export default class PharmaCompanyCreate extends Component {
 	}
 
 	render() {
-		const { success } = this.state;
+		const { success, variable } = this.state;
 
     if (success) {
       return <Redirect to={'/pharma_companies'} />

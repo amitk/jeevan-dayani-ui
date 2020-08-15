@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { Link } from 'react-router-dom';
 import { Container, Card, Form, FormGroup  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
-
+import Loading from '../Loading.js';
 
 export default class TrialForm extends Component {
   state = {
@@ -12,12 +12,15 @@ export default class TrialForm extends Component {
     phaseOptions: [],
     trialConfiguration: "",
     trialConfigurationOptions: [],
+    loading: true
   }
 
   componentDidMount() {
     this.trialConfigurationOptions();
 
-    if(!this.props.create) {
+    if(this.props.create) {
+      this.setState({ loading: false })
+    } else {
       ApiRequest('trial', 'get', this.props.trialId, null, null).then(response => {
         let trial = response.data.data.trial;
         let trialConfiguration = response.data.data.trial_configuration;
@@ -25,7 +28,8 @@ export default class TrialForm extends Component {
         this.setState({
           name: trial.name,
           phase: { label: this.returnPhaseLabel(trial.phase), value: trial.phase.toString() },
-          trialConfiguration: { label: trialConfiguration.name, value: trialConfiguration.id }
+          trialConfiguration: { label: trialConfiguration.name, value: trialConfiguration.id },
+          loading: false
         })
       })
     }
@@ -84,8 +88,12 @@ export default class TrialForm extends Component {
   }
 
   render() {
-    const { name, phase, phaseOptions, trialConfiguration, trialConfigurationOptions } = this.state;
+    const { name, phase, phaseOptions, trialConfiguration, trialConfigurationOptions, loading } = this.state;
 
+    if(loading) {
+      return <Loading />
+    }
+    
     return (
       <Container>
         <Card>

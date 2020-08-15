@@ -4,13 +4,14 @@ import { Container, Card,  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-
+import Loading from '../Loading.js';
 
 export default class Drugs extends Component {
   
   state = {
     patients: [],
     trial: {},
+    loading: true
   }
 
 
@@ -18,7 +19,7 @@ export default class Drugs extends Component {
     let trialId = this.props.match.params.trial_id
     if (trialId) {
       ApiRequest('patient', 'get', null, null, {resource: 'trial', id: trialId}).then(response => {
-        this.setState({ patients: response.data.data })
+        this.setState({ patients: response.data.data, loading: false })
       }).catch(err => {
         console.log(`Unable to fetch patients due to: ${err}`);
       })
@@ -52,7 +53,7 @@ export default class Drugs extends Component {
   }
 
   render() {
-    const { patients, trial } = this.state;
+    const { patients, trial, loading } = this.state;
 
     const columns = [
       {
@@ -82,6 +83,10 @@ export default class Drugs extends Component {
         formatter: this.deleteDrug,
       }
     ]
+
+    if(loading) {
+      return <Loading />
+    }
   
     return (
       <Container>

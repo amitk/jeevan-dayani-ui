@@ -4,7 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { Container, Card, Form, FormGroup  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
 import Feedback from 'react-bootstrap/esm/Feedback';
-
+import Loading from '../Loading.js'
 
 export default class PatientForm extends Component {
 
@@ -17,6 +17,7 @@ export default class PatientForm extends Component {
     feedback: "",
     success: false,
     feedbackId: "",
+    loading: true
   }
   
   componentWillMount() {
@@ -27,7 +28,9 @@ export default class PatientForm extends Component {
       this.setState({ trial: response.data.data.trial })
     })
 
-    if(!this.props.create) {
+    if(this.props.create) {
+      this.setState({ loading: false })
+    } else {
       ApiRequest('patient', 'get', patientId, null, { resource: 'trial', id: trialId }).then(response => {
         let patient = response.data.data.patient
         let feedback = response.data.data.feedback
@@ -39,6 +42,7 @@ export default class PatientForm extends Component {
           feedbackPresent: !!feedback,
           feedback: feedback ? { label: feedback.state, value: feedback.state } : "",
           feedbackId: feedback ? feedback.id : "",
+          loading: false
         })
       })
     }
@@ -86,10 +90,14 @@ export default class PatientForm extends Component {
   }
 
   render() {
-    const { name, age, sex, feedback, success, trial } = this.state;
+    const { name, age, sex, feedback, success, trial, loading } = this.state;
 
     if (success) {
       return <Redirect to={`/trials/${trial.id}/patients`} />
+    }
+
+    if(loading) {
+      return <Loading />
     }
     return (
       <Container>

@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { Link, Redirect } from 'react-router-dom';
 import { Container, Card, Form, FormGroup  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
-
+import Loading from '../Loading.js';
 
 export default class DrugForm extends Component {
 
@@ -13,6 +13,7 @@ export default class DrugForm extends Component {
     sideEffects: "",
     pharma_company: {},
     success: false,
+    loading: true
   }
   
   componentWillMount() {
@@ -23,13 +24,16 @@ export default class DrugForm extends Component {
       this.setState({ pharma_company: response.data.data })
     })
 
-    if(!this.props.create) {
+    if(this.props.create) {
+      this.setState({ loading: false });
+    } else {
       ApiRequest('drug', 'get', drugId, null, { resource: 'pharma_company', id: pharmaCompanyId }).then(response => {
         let pharmaCompany = response.data.data
         this.setState({
           name: pharmaCompany.name,
           targetAilment: { label: pharmaCompany.target_ailment, value: pharmaCompany.target_ailment },
-          sideEffects: pharmaCompany.side_effects.map(se => ({ label: se, value: se }))
+          sideEffects: pharmaCompany.side_effects.map(se => ({ label: se, value: se })),
+          loading: false
         })
       })
     }
@@ -71,10 +75,14 @@ export default class DrugForm extends Component {
   }
 
   render() {
-    const { name, targetAilment, sideEffects, pharma_company, success } = this.state;
+    const { name, targetAilment, sideEffects, pharma_company, success, loading } = this.state;
 
     if (success) {
       return <Redirect to={`/pharma_companies/${pharma_company.id}/drugs`} />
+    }
+
+    if (loading) {
+      return <Loading />
     }
     return (
       <Container>
@@ -110,7 +118,7 @@ export default class DrugForm extends Component {
 					</Card.Body>
           <Card.Footer>
             <button className="btn btn-primary" onClick={this.handleSubmit}>Submit</button>{' '}
-            <Link id="cancel" to={`/pharma_companies`}><button className="btn btn-secondary">Cancel</button></Link>
+            <Link id="cancel" to={`/pharma_companies/${pharma_company.id}/drugs`}><button className="btn btn-secondary">Cancel</button></Link>
           </Card.Footer>
         </Card>
       </Container>      

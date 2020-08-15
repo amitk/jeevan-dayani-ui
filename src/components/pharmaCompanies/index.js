@@ -12,7 +12,7 @@ export default class PharmaCompanies extends Component {
     loading: true
   }
 
-  componentWillMount() {
+  componentDidMount() {
     ApiRequest('pharma_company', 'get', null, null, null).then(response => {
       this.setState({ pharmaCompanies: response.data.data, loading: false })
     }).catch(err => {

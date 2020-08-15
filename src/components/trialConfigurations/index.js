@@ -4,15 +4,17 @@ import { Container, Card,  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi.js';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
+import Loading from '../Loading.js';
 
 export default class TrialConfigurations extends Component {
   state = {
     trialConfigurations: [],
+    loading: true,
   }
 
   componentDidMount() {
     ApiRequest('trial_configuration', 'get', null, null, null).then(response => {
-      this.setState({ trialConfigurations: response.data.data })
+      this.setState({ trialConfigurations: response.data.data, loading: false })
       console.log(response, "trialConfigurations");
     }).catch(err => {
       console.log(`Unable to fetch trialConfigurations due to: ${err}`);
@@ -39,7 +41,7 @@ export default class TrialConfigurations extends Component {
 	}
 
   render() {
-    const { trialConfigurations } = this.state;
+    const { trialConfigurations, loading } = this.state;
 
     const columns = [
     {
@@ -69,6 +71,10 @@ export default class TrialConfigurations extends Component {
       formatter: this.delete
     }
   ]
+
+  if(loading) {
+    return <Loading />
+  }
 
     return (
       <Container>

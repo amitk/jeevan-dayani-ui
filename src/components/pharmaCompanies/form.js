@@ -2,17 +2,21 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Card, Form, FormGroup  } from 'react-bootstrap';
 import { ApiRequest } from '../sharedApi';
+import Loading from '../Loading.js';
 
 export default class PharmaCompanyForm extends Component {
   state = {
     name: "",
     success: false,
+    loading: true,
   }
 
   componentDidMount() {
-    if(!this.props.create) {
+    if(this.props.create) {
+      this.setState({ loading: false })
+    } else {
       ApiRequest('pharma_company', 'get', this.props.pharmaCompanyId, null, null).then(response => {
-        this.setState({ name: response.data.data.name })
+        this.setState({ name: response.data.data.name, loading: false })
       })
     }
   }
@@ -31,8 +35,12 @@ export default class PharmaCompanyForm extends Component {
   }
 
   render() {
-    const { success, name } = this.state;
-
+    const { success, name, loading } = this.state;
+    
+    if(loading) {
+      return <Loading />
+    }
+    
     return (
       <Container>
         <Card>
