@@ -9,7 +9,7 @@ export default class DoctorForm extends Component {
   state = {
     name: "",
     specialization: "",
-    clinics: "",
+    clinics: [],
     clinicOptions: [],
     loading: true,
   }
